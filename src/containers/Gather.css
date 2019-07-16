@@ -1,0 +1,24 @@
+table, th, td {
+    border: 1px solid white;
+    border-collapse: collapse;
+}
+
+.true{
+    color:green;
+    background-color:PaleGreen;
+}
+
+
+
+.Y{
+    color:red;
+    background-color:Salmon;
+}
+.N{
+    color:green;
+    background-color:PaleGreen;
+}
+.false{
+    color:red;
+    background-color:Salmon;
+}

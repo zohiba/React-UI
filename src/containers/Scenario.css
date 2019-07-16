@@ -1,0 +1,37 @@
+.table{
+
+    color:blue;
+    padding-top: 20px;
+    padding-right: 10px;
+    padding-bottom: 50px;
+    padding-left: 0px;
+
+}
+
+.container{
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.left {padding-right : 20px; float:left;}
+.right {float:left;}
+
+.pass{
+    color:green;
+    background-color:PaleGreen;
+}
+
+.fail{
+    color:red;
+    background-color:Salmon;
+}
+
+.load{
+    color:black;
+    background-color:dimgray;
+}
+
+.headerrow{
+
+    color: blue
+}
