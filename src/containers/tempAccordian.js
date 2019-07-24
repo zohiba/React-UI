@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'rc-collapse/assets/index.css';
 import {CopyToClipboard} from 'react-copy-to-clipboard'
-import {Callout, Icon} from '@bandwidth/shared-components';
+import {Callout} from '@bandwidth/shared-components';
 const text = `
   A dog is a type of domesticated animal.
   Known for its loyalty and faithfulness,
@@ -61,43 +61,42 @@ class NestedAccordian extends React.Component {
             }
 
             items.push(
-            <Panel style={{backgroundColor:color,fontWeight:'bold'}}
-                   header={`${direction.toUpperCase()} call from ${from} to ${to}`}
-                   key={key} >
+                <Panel style={{backgroundColor:color,fontWeight:'bold'}}
+                       header={`${direction.toUpperCase()} call from ${from} to ${to}`}
+                       key={key} >
 
-                {"Call ID: "+callId+" "}
-                <CopyToClipboard text={callId}>
-                    <Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout>
-                </CopyToClipboard>
-                <br></br>
-                {"From: "+from+" "}
-                <CopyToClipboard text={from}>
-                    <Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout>
-                </CopyToClipboard>
-                {"  To: "+to+" "}
-                <CopyToClipboard text={to}>
-                    <Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout>
-                </CopyToClipboard>
-                <br></br>
-                {"Call Started At: "+callLeg[0]["startedAt"]}
+                    {"Call ID: "+callId+" "}
+                    <CopyToClipboard text={callId}>
+                        <Callout content="Copy!"><button className="fa fa-clipboard" ></button></Callout>
+                    </CopyToClipboard>
+                    <br></br>
+                    {"From: "+from+" "}
+                    <CopyToClipboard text={from}>
+                        <Callout content="Copy!"><button className="fa fa-clipboard" ></button></Callout>
+                    </CopyToClipboard>
+                    {"  To: "+to+" "}
+                    <CopyToClipboard text={to}>
+                        <Callout content="Copy!"><button className="fa fa-clipboard" ></button></Callout>
+                    </CopyToClipboard>
+                    <br></br>
+                    {"Call Started At: "+callLeg[0]["startedAt"]}
 
 
-                {list.map(entry =>
-                    <Collapse defaultActiveKey="1" >
-                        <Panel style={{backgroundColor:callLeg[entry]['color']}}
-                               header={`Callback event ${callLeg[entry]["eventType"]} `} key={callLeg[entry]}>
-                            <div defaultActiveKey="1">
-                                {<p>{callLeg[entry]["bxml"]}</p>}
-                                {callLeg[entry]["ValidationErrors"].map(item =>
-                                    <p>{item}</p>)
-                                }
-                            </div>
+                    {list.map(entry =>
+                        <Collapse defaultActiveKey="1" >
+                            <Panel style={{backgroundColor:callLeg[entry]['color']}}
+                                   header={`Callback event ${callLeg[entry]["eventType"]} `} key={callLeg[entry]}>
+                                <Collapse defaultActiveKey="1">
+                                    {callLeg[entry]["ValidationErrors"].map(item =>
+                                        <p>{item}</p>)
+                                    }
+                                </Collapse>
 
-                        </Panel>
-                    </Collapse>
-                )}
+                            </Panel>
+                        </Collapse>
+                    )}
 
-            </Panel>);
+                </Panel>);
         }
         return items;
     }
@@ -115,7 +114,9 @@ class NestedAccordian extends React.Component {
         const btn = accordion ? 'Mode: accordion' : 'Mode: collapse';
         const activeKey = this.state.activeKey;
         return (<div style={{ margin: 20, width: 700 }}>
+            <button onClick={this.toggle}>{btn}</button>
 
+            <br/><br/>
             <Collapse
                 accordion={accordion}
                 onChange={this.onChange}

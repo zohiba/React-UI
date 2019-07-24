@@ -1,0 +1,64 @@
+table  {
+    border: 1px solid white;
+    border-collapse: collapse;
+}
+th  {
+    border: 1px solid white;
+    border-collapse: collapse;
+    font-size: 15px;
+    background-color: #BCECFB;
+}
+td{
+    border: 1px solid white;
+    border-collapse: collapse;
+    text-align: center;
+    /*padding: 3px;*/
+}
+
+.true{
+    color:green;
+    background-color:PaleGreen;
+    text-align: center;
+
+}
+.true:after {
+
+    background-color:PaleGreen;
+    content:"\002714";
+    text-align: center;
+    color:green;
+}
+
+
+
+.Y{
+    color:red;
+    background-color:Salmon;
+}
+.N{
+    color:green;
+    background-color:PaleGreen;
+}
+
+.false {
+    color:red;
+    background-color:Salmon;
+    text-align: center;
+
+;
+}
+.false:after {
+    color:red;
+    background-color:Salmon;
+    content:"❌";
+    text-align: center;
+}
+
+
+
+.missing{
+    text-align: center;
+
+    color:red;
+    background-color:#ffcccc;
+}

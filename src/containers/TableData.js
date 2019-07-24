@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import Popup from "reactjs-popup";
 import NestedAccordian from './NestedAccordian';
-import { Button } from '@bandwidth/shared-components';
+import {Button, H2, Horizontal, Modal} from "@bandwidth/shared-components";
 class TableData extends Component {
     constructor (props) {
         super(props);
@@ -85,8 +85,10 @@ class TableData extends Component {
                 jsonObject.to = temp["to"]["number"];
                 jsonObject.from = temp["from"]["number"];
                 jsonObject.callId = temp["callId"];
+                jsonObject.executionId = temp["executionId"];
                 jsonObject.ValidationErrors = [this.state.errorMessage];  //parseErrors(validationErrors)
                 jsonObject.color = color;
+                jsonObject.bxml= "No bxml Response";
                 eachcallleg.push(jsonObject);
             }
             else {
@@ -99,11 +101,12 @@ class TableData extends Component {
                     const from = callback["callback"]["event"]["from"];
                     const callId = callback["callback"]["event"]["callId"];
                     const validationErrors = callback["validationErrors"];
+                    const bxml = callback["bxml"];
                     var color = '#A9A9A9';
                     if (callback["valid"]) {
                         color = '#cff5ce';
                     } else {
-                        color = '#e8bdbd';//'#d89090';//'#ffb3b3';//'#f1c4b5';
+                        color = '#e8bdbd';//'#d89090';//'#ffb3b3';
                     }
 
                     var jsonObject = {};
@@ -113,9 +116,11 @@ class TableData extends Component {
                     jsonObject.to = to;
                     jsonObject.from = from;
                     jsonObject.callId = callId;
+                    jsonObject.executionId = temp["executionId"];
                     jsonObject.ValidationErrors = this.parser(validationErrors);  //parseErrors(validationErrors)
                     jsonObject.color = color;
                     jsonObject.startedAt = temp["startedAt"];
+                    jsonObject.bxml = bxml;
                     eachcallleg.push(jsonObject);
 
                 }
@@ -127,53 +132,57 @@ class TableData extends Component {
 
         this.setState({allCallLegs: allcalllegs});
 
-        console.log(this.state.allCallLegs);
-
-
-
 
 
     }
-
-    // showpopup(value){
-    //
-    //     //console.log(this.props);
-    //     //console.log(value);
-    //     return (<Popup  trigger={<button> Trigger</button>} position="right center">
-    //         <div>Popup content here !!</div>
-    //     </Popup>);
-    // }
 
 
 
 
     render () {
-        //console.log(this.state.errorInfo);
-        //console.log(JSON.stringify(this.state.errorInfo, null, 1));
+        var title = "Execution ID: "+this.props.exeid;
 
-
-
+        const toggle = () => this.setState({ show: !this.state.show });
 
         return (
-            <td class="text-center">
-                <Popup
-                    trigger={<div  style={{width:120}}> {this.props.icon} </div>}
-                    modal
-                    closeOnDocumentClick
-                >
-                    {close =>(
-                        <div>
-                            <a className="close" onClick={close}>
-                                &times;
-                            </a>
-                            <NestedAccordian info={this.state.allCallLegs}></NestedAccordian>
+            <td >
 
-                        </div>
+                <div>
+                    <button style={{width:80}} onClick={toggle}> {this.props.icon}</button>
+                    {this.state.show && (
+                        <Modal
+                            title= {title}
+                            actionContent={
+                                <Horizontal spacing="md" style={{ alignItems: 'center'}}>
+                                    <Button icon="delete" onClick={toggle}>Close</Button>
+                                </Horizontal>
+                            }
+                        >
+                            <div style={{ fontSize: '14px' }}>
+                                <H2 style={{textAlign:"left", paddingLeft:"18px"}}>Call Legs</H2>
+                                {/*Execution ID: {this.props.exeid}*/}
+                                <NestedAccordian info={this.state.allCallLegs}></NestedAccordian>
+                            </div>
+                        </Modal>
                     )}
-                </Popup>
+                </div>
+                {/*<Popup*/}
+                {/*    trigger={<button  style={{width:80}}> {this.props.icon} </button>}*/}
+                {/*    modal*/}
+                {/*    closeOnDocumentClick*/}
+                {/*>*/}
+                {/*    {close =>(*/}
+                {/*        <div>*/}
+                {/*            <a className="close" onClick={close}>*/}
+                {/*                &times;*/}
+                {/*            </a>*/}
+                {/*            <NestedAccordian info={this.state.allCallLegs}></NestedAccordian>*/}
+
+                {/*        </div>*/}
+                {/*    )}*/}
+                {/*</Popup>*/}
             </td>
 
-            //<td value={this.state.errorInfo} onClick={() => this.showpopup(this.state.errorInfo)}>{this.state.value.toString()} </td>
         );
     }
 }

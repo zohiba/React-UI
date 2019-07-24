@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./Login.css";
-import Scenario from "./Scenario.css"
 
 export default class Login extends Component {
     constructor(props) {
@@ -33,23 +32,14 @@ export default class Login extends Component {
 
         localStorage.clear();
         localStorage.setItem("user", this.state.email);
-        console.log(localStorage.getItem("pass"));
         localStorage.setItem("pass", this.state.password);
 
         if (this.state.email== "test"){
             if (this.state.password =="test"){
-                // let path = "./Scenario";
-                // this.props.history.push(path);
-                // localStorage.setItem("user", this.state.email);
-                // localStorage.setItem("pass", this.state.password);
+
                 this.props.history.push({pathname:"./Scenario", data: [this.state.email, this.state.password]});
-
-
             }
         }
-
-
-
 
     }
 

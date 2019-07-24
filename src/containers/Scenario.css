@@ -7,28 +7,50 @@
     padding-left: 0px;
 
 }
+th  {
+    border: 1px solid white;
+    border-collapse: collapse;
+    font-size: 15px;
+    background-color: #BCECFB;
+}
 
 .container{
 
     padding-top: 10px;
     padding-bottom: 10px;
 }
-.left {padding-right : 20px; float:left;}
 .right {float:left;}
 
 .pass{
     color:green;
     background-color:PaleGreen;
 }
+.pass:after{
+    color:green;
+    background-color:PaleGreen;
+    content:"✔";
+}
 
 .fail{
     color:red;
     background-color:Salmon;
+
+}
+
+.fail:after{
+    color:red;
+    background-color:Salmon;
+    content:"✖";
 }
 
 .load{
     color:black;
-    background-color:dimgray;
+    background-color:#B3ECFB;
+}
+.load:after{
+    color:black;
+    background-color:#B3ECFB;
+    content:"➰"
 }
 
 .headerrow{
