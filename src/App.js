@@ -18,19 +18,15 @@ class App extends Component {
                         </Link.Wrap>
                         </Navigation.ItemList>
                         <Navigation.ItemList>
-                        <Link.Wrap to="/scenario">
+                        <Link.Wrap to="/callScenarios">
                             <Navigation.Item>Scenario</Navigation.Item>
                         </Link.Wrap>
                         </Navigation.ItemList>
-
                     </Navigation.ItemListStack>
                 </Navigation>
                 <Routes />
             </div>
         );
     }
-
-
 }
-
 export default App;

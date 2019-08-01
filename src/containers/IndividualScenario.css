@@ -2,26 +2,27 @@ table  {
     border: 1px solid white;
     border-collapse: collapse;
 }
+
 th  {
     border: 1px solid white;
     border-collapse: collapse;
     font-size: 15px;
     background-color: #BCECFB;
 }
+
 td{
     border: 1px solid white;
     border-collapse: collapse;
     text-align: center;
-    /*padding: 3px;*/
 }
 
-.true{
+.passed{
     color:green;
     background-color:PaleGreen;
     text-align: center;
-
 }
-.true:after {
+
+.passed:after {
 
     background-color:PaleGreen;
     content:"\002714";
@@ -29,36 +30,48 @@ td{
     color:green;
 }
 
-
-
-.Y{
+.callFailed{
     color:red;
     background-color:Salmon;
 }
-.N{
+.callPassed{
     color:green;
     background-color:PaleGreen;
 }
 
-.false {
+.failed {
     color:red;
     background-color:Salmon;
     text-align: center;
-
-;
 }
-.false:after {
+
+.failed:after {
     color:red;
     background-color:Salmon;
     content:"❌";
     text-align: center;
 }
 
-
-
 .missing{
     text-align: center;
-
     color:red;
     background-color:#ffcccc;
 }
+
+.headerWidth{
+    width: 20px;
+}
+
+.table-responsive{
+    padding:30px;
+}
+
+.scenarioName{
+    color:black;
+}
+
+.callLegs{
+    text-align:center;
+}
+
+

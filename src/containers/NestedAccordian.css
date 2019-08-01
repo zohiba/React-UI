@@ -1,8 +1,26 @@
-.green{
-    color:green;
+
+.panelWidth{
+    width:700px;
+    margin:20px
 }
 
-.red{
-    colod: red;
+.callLegPassed{
+    background-color:lightgreen;
+    font-weight:bold;
 }
+
+.callLegFailed{
+    background-color:#d89090;
+    font-weight:bold;
+}
+
+.callbackEventPassed{
+    background-color:#cff5ce;
+
+}
+
+.callbackEventFailed{
+    background-color:#e8bdbd ;
+}
+
 

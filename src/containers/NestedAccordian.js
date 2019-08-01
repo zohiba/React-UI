@@ -1,23 +1,13 @@
 import 'string.prototype.repeat';
 import Collapse, { Panel } from 'rc-collapse';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import 'rc-collapse/assets/index.css';
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 import {Callout, Icon} from '@bandwidth/shared-components';
-const text = `
-  A dog is a type of domesticated animal.
-  Known for its loyalty and faithfulness,
-  it can be found as a welcome guest in many households across the world.
-`;
-
-function random() {
-    return parseInt(Math.random() * 10, 10) + 1;
-}
+import "./NestedAccordian.css"
 
 class NestedAccordian extends React.Component {
     state = {
-        time: random(),
         accordion: false,
         activeKey: ['4'],
         to: "",
@@ -31,106 +21,63 @@ class NestedAccordian extends React.Component {
         });
     }
 
-    getItems() {
-        const items = [];
-        for (let i = 0; i < this.props.info.length; i++) {
-            const key = i + 1;
-            const callLeg = this.props.info[i];  //array of callbacks
-            const to = callLeg[0]["to"];
-            const from = callLeg[0]["from"];
-            const callId = callLeg[0]["callId"];
-            const direction = callLeg[0]["direction"];
-            //const id = callLeg[0]["executionId"];
-            var color = "lightgreen";
-            for (let item in callLeg){
-                //callLeg[item] is inbound or outbound
-                var eachleg  = callLeg[item];
-                if (eachleg["success"] == false){
-                    color = '#d89090';//'#d17a7a';//"#ff9999";
-                }
-
-            }
-            var withoutC =[];
-            var a = JSON.parse(JSON.stringify(callLeg));
-            var list = [];
-            for (let i in a){
-                var x = a[i];
-                list.push(i);
-                delete x.color;
-                withoutC.push(x);
-            }
-
-            items.push(
-            <Panel style={{backgroundColor:color,fontWeight:'bold'}}
-                   header={`${direction.toUpperCase()} call from ${from} to ${to}`}
-                   key={key} >
-
-                {"Call ID: "+callId+" "}
-                <CopyToClipboard text={callId}>
-                    <Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout>
-                </CopyToClipboard>
-                <br></br>
-                {"From: "+from+" "}
-                <CopyToClipboard text={from}>
-                    <Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout>
-                </CopyToClipboard>
-                {"  To: "+to+" "}
-                <CopyToClipboard text={to}>
-                    <Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout>
-                </CopyToClipboard>
-                <br></br>
-                {"Call Started At: "+callLeg[0]["startedAt"]}
-
-
-                {list.map(entry =>
-                    <Collapse defaultActiveKey="1" >
-                        <Panel style={{backgroundColor:callLeg[entry]['color']}}
-                               header={`Callback event ${callLeg[entry]["eventType"]} `} key={callLeg[entry]}>
-                            <div defaultActiveKey="1">
-                                {<p>{callLeg[entry]["bxml"]}</p>}
-                                {callLeg[entry]["ValidationErrors"].map(item =>
-                                    <p>{item}</p>)
-                                }
-                            </div>
-
-                        </Panel>
-                    </Collapse>
-                )}
-
-            </Panel>);
+    getCallLegs() {
+        if (!this.props.info) {
+            return [];
         }
-        return items;
-    }
+        return this.props.info.map((callLeg, index) =>{
+            const key= index+1;
+            const to = callLeg[0].to;
+            const from = callLeg[0].from;
+            const callId = callLeg[0].callId;
+            const direction = callLeg[0].direction;
+            const callLegStatus = callLeg.find(leg => !leg.success) ? "callLegFailed" : "callLegPassed";
+            return (
+                <Panel className={callLegStatus}
+                       header={`${direction.toUpperCase()} call from ${from} to ${to}`}
+                       key={key} >
 
+                    {"Call ID: "+callId+" "}
+                    <CopyToClipboard text={callId}><Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout></CopyToClipboard>
 
-    toggle = () => {
-        this.setState({
-            accordion: !this.state.accordion,
-        });
+                    <br></br>
+
+                    {"From: "+from+" "}
+                    <CopyToClipboard text={from}><Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout></CopyToClipboard>
+                    {"  To: "+to+" "}
+                    <CopyToClipboard text={to}><Callout content="Copy!"><Icon style={{color:"blue"}} name="copy" /></Callout></CopyToClipboard>
+
+                    <br></br>
+
+                    {"Call Started At: "+callLeg[0].startedAt}
+
+                    {callLeg.map(callbackEvent =>
+                        <Collapse defaultActiveKey="1" >
+                            <Panel className={callbackEvent.success ? "callbackEventPassed" : "callbackEventFailed"}
+                                   header={`Callback event ${callbackEvent.eventType} `} key={callbackEvent}>
+                                <div defaultActiveKey="1">
+                                    {<p>{callbackEvent.bxml}</p>}
+                                    {callbackEvent.validationErrors.map(error =>
+                                        <p>{error}</p>)
+                                    }
+                                </div>
+                            </Panel>
+                        </Collapse>
+                    )}
+                </Panel>);
+        })
     }
 
     render() {
-
         const accordion = this.state.accordion;
-        const btn = accordion ? 'Mode: accordion' : 'Mode: collapse';
         const activeKey = this.state.activeKey;
-        return (<div style={{ margin: 20, width: 700 }}>
-
-            <Collapse
-                accordion={accordion}
-                onChange={this.onChange}
-                activeKey={activeKey}
-            >
-                {/*<h3>Call Legs</h3>*/}
-                {/*<div>Execution ID: {this.props.info[0][0]["executionId"]+" "}*/}
-                {/*<CopyToClipboard text={this.props.info[0][0]["executionId"]}>*/}
-                {/*    <Callout content="Copy!"><button className="fa fa-clipboard" ></button></Callout>*/}
-                {/*</CopyToClipboard>*/}
-                {/*</div>*/}
-                {this.getItems()}
+        return (<div className="panelWidth">
+            <Collapse accordion={accordion} onChange={this.onChange} activeKey={activeKey}>
+                {this.getCallLegs()}
             </Collapse>
         </div>);
     }
 }
-
 export default NestedAccordian;
+
+

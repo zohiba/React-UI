@@ -1,319 +1,202 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import  {Component} from 'react';
-//import {Table} from "reactstrap";
 import {Table} from '@bandwidth/shared-components';
 import './IndividualScenario.css';
 import TableData from "./TableData";
-class IndividualScenario extends Component {
-    state= {tableHeader: [], exeInfo:[], allrows: [], description: ""}
+import {getAuthHeader} from "./SetCredentials";
+class Individual extends Component {
 
-    countofHeaders(){
-        var count = 0;
-        for (let i in this.state.tableHeader){
-            var list = this.state.tableHeader[i];
-            for (let j in list){
-                count+=1;
-            }
-        }
-        return count;
+    state= {tableHeader: [], exeInfo:[], description: ""}
 
+    countOfHeaders(){
+        return this.state.tableHeader
+            .reduce((sum, header) => sum + header.length, 0);
     }
-    hasproblem(validationErrors){
-        var prob  =false;
-        if (validationErrors == null){
-            return prob;
-        }
 
-        for (let i in validationErrors){
-            var eacherror = validationErrors[i];
-            if (eacherror.includes("Unexpected callback")){
-                prob = true;
-                return prob;
-            }
-        }
-        return prob;
-
+    hasProblem(validationErrors) {
+        return validationErrors != null && validationErrors.find(e => e.includes("Unexpected callback"));
     }
 
     formatTime(time){
-        var time = time;
-        var formattedTime = time.split(".")[0];
-        return formattedTime;
-
+        return time.split(".")[0];
     }
 
-    async componentDidMount() {
-        console.log(this.props.scenario);
-        var u = localStorage.getItem("user");
-        var p = localStorage.getItem("pass");
-
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Accept', 'application/json');
-        headers.append('Access-Control-Allow-Origin', 'http://localhost:3000');
-        headers.append('Access-Control-Allow-Credentials', 'true');
-
-        headers.append('GET', 'POST', 'OPTIONS');
-        headers.set('Authorization', 'Basic ' + Buffer.from(u + ":" + p).toString('base64'));
-
-        //console.log("before fetching");
-        const response = await fetch('http://localhost:8091/scenarios/'+this.props.scenario+'/executions?limit=1000', {
-            method: 'GET',
-            headers: headers
-        });
-        //console.log("here");
-        const body = await response.json();
-        console.log(body);
-        //console.log(" Iam here");
-        var description = "";
-        for (let i in body) {
-            //console.log(body[i]);
-            const obj = body[i];
-            //let exeInfo = {};
-            //console.log(obj["successful"]);
-            if (obj["successful"] || obj["completed"]) {
-                let callLegs = obj["callLegs"];
-                let calllegCount = obj["callLegs"].length;
-                let alllegheader = [];
-                let headcount = 0;
-                let jsoncallLegs = [];
-                for (let callIndex in callLegs) {
-                    //callIndex tells which number of callLeg we are in (there can be more than 2 CallLegs)
-                    var count = callIndex;
-
-                    let legheader = [];
-                    let eachcallleg = callLegs[callIndex];
-                    //console.log(eachcallleg);
-                    let validationResults = eachcallleg["validationResults"];
-                    //console.log(validationResults);
-                    let callDirection = eachcallleg["callDirection"];
-                    let validationcount = validationResults.length;
-                    let directionEvents = [];
-                    for (let eventIndex in validationResults) {
-                        let jsonevent = {}
-                        const event = validationResults[eventIndex];
-                        headcount += 1;
-                        //console.log(headcount);
-                        let eventName = event["callback"]["event"]["eventType"];
-                        var validationErrors = event["validationErrors"];
-                        //console.log(validationErrors);
-                        if (validationErrors != null && this.hasproblem(validationErrors)){
-
-                            console.log("problem");
-
-                        }
-                        else {
-
-
-                            //console.log(eventName);
-                            legheader.push(eventName);
-                        }
-                        //console.log(legheader.answer == null);
-
-
-                    }
-                    jsoncallLegs.push(directionEvents);
-                    //console.log(jsoncallLegs);
-                    alllegheader.push(legheader);
-                    //console.log(alllegheader);
-
-                    if (headcount > this.countofHeaders()) {
-                        this.setState({tableHeader: alllegheader})
-                    }
-                    //console.log(this.state.tableHeader);
-                }
-            }
-        }
-        console.log(this.state.tableHeader);
-        var maininfo = []
-        for (let i in body) {
-            const obj = body[i];
-            let exeInfo = {};
-            if (obj["successful"] || obj["completed"]) {
-                let callLegs = obj["callLegs"];
-                exeInfo.num = i;
-                exeInfo.id = obj["id"];
-                exeInfo.completed = obj["completed"];
-                exeInfo.startedAt = this.formatTime(obj["startedAt"]);
-                exeInfo.errorMessage = obj["errorMessage"];
-                exeInfo.description = obj["scenario"]["description"];
-                description = obj["scenario"]["description"];
-                let headcount = 0;
-                let jsoncallLegs = [];
-                //console.log("Blahrthyrthy");
-                var numlegs = this.state.tableHeader.length;
-                for (let callIndex in Array.from(Array(numlegs).keys())) {
-                    // console.log(callIndex);
-                    var columns = this.state.tableHeader[callIndex];
-                    let eachcallleg = callLegs[callIndex];
-                    let validationResults = eachcallleg["validationResults"];
-                    var jsonevents = []
-                    for (let events in columns) {
-                        var jsonevent = {};
-                        var event = columns[events];
-                        if (validationResults[events] != null) {
-                            var callEvent = validationResults[events];
-                            //console.log(callEvent);
-                            var eventType = callEvent["callback"]["event"]["eventType"];
-                            var valid = callEvent["valid"];
-
-                            var validationErrors = callEvent["validationErrors"];
-                            //console.log(validationErrors);
-                            if (validationErrors != null && this.hasproblem(validationErrors)){
-                                //console.log("unexpected calback");
-                                //console.log(obj["id"]);
-                                exeInfo.prob = "Y";
-
-                            }
-                            else {
-                                jsonevent.event = eventType;
-                                jsonevent.valid = valid;
-                                // console.log(jsonevent);
-                            }
-
+    setTableHeaders(responseBody){
+        for (let i in responseBody) {
+            const executionInfo = responseBody[i];
+            if (executionInfo.successful || executionInfo.completed) {
+                let callLegs = executionInfo.callLegs;
+                let allLegHeader = [];
+                let headerCount = 0;
+                callLegs.forEach((callLeg) =>{
+                    let callLegHeaders = [];
+                    let validationResults = callLeg.validationResults;
+                    validationResults.forEach((event)=> {
+                        headerCount += 1;
+                        let eventName = event.callback.event.eventType;
+                        let validationErrors = event.validationErrors;
+                        if (this.hasProblem(validationErrors)) {
+                            //don't do anything
                         } else {
-                            jsonevent.event = "empty";
-                            jsonevent.valid = "false";
-                            // console.log(jsonevent);
-
+                            callLegHeaders.push(eventName);
                         }
-                        jsonevents.push(jsonevent);
-                        //console.log(jsonevents);
-
+                    });
+                    allLegHeader.push(callLegHeaders);
+                    if (headerCount > this.countOfHeaders()) {
+                        this.setState({tableHeader: allLegHeader});
                     }
-                    jsoncallLegs.push(jsonevents);
-
-
-
-
-                    //callIndex tells which number of callLeg we are in (there can be more than 2 CallLegs)
-
-
-                }
-                exeInfo.callLegs = jsoncallLegs;
-                if (exeInfo.prob == undefined){
-                    exeInfo.prob = "N";
-                }
-                //console.log(exeInfo);
-                maininfo.push(exeInfo);
-
-
+                });
             }
         }
-        //console.log(maininfo);
-        this.setState({exeInfo: maininfo});
+    }
+
+    setTableInformation(responseBody){
+        const mainInfo = responseBody
+            .filter(execution => execution.successful || execution.completed)
+            .map((execution, index) => this.buildExecutionInformation(execution, index));
+
+        let description = mainInfo.length === 0 ? "" : mainInfo[0].description;
+        this.setState({exeInfo: mainInfo});
         this.setState({description:description});
     }
 
+    buildExecutionInformation(execution, index) {
+        const executionInfo = {};
+        executionInfo.num = index;
+        executionInfo.id = execution.id;
+        executionInfo.completed = execution.completed;
+        executionInfo.startedAt = this.formatTime(execution.startedAt);
+        executionInfo.errorMessage = execution.errorMessage;
+        executionInfo.description = execution.scenario.description;
 
+        let allCallLegs = [];
+        let callLegs = execution.callLegs;
+        this.state.tableHeader.forEach((columns, callIndex) => {
+            let validationResults = callLegs[callIndex].validationResults;
+            const callLegEvents = columns.map((col, index) => {
+                const callbackEventTypeStatus = {};
+                if (validationResults[index] != null) {
+                    const callbackEvent = validationResults[index];
+                    const eventType = callbackEvent.callback.event.eventType;
+                    const valid = callbackEvent.valid;
+                    let validationErrors = callbackEvent.validationErrors;
+                    if (validationErrors != null && this.hasProblem(validationErrors)) {
+                        executionInfo.problem = true;
+                    } else {
+                        callbackEventTypeStatus.event = eventType;
+                        callbackEventTypeStatus.valid = valid;
+                    }
+                } else {
+                    callbackEventTypeStatus.event = "empty";
+                    callbackEventTypeStatus.valid = "false";
+                }
+                return callbackEventTypeStatus;
+            });
+            allCallLegs.push(callLegEvents);
+        });
+        executionInfo.callLegs = allCallLegs;
+        if (executionInfo.problem === undefined) {
+            executionInfo.problem = false;
+        }
+        return executionInfo;
+    }
 
+    async componentDidMount() {
 
-
-
-
-
-
-    componentDidUpdate(){
-        // console.log("moy composnet just dered");
+        const response = await fetch('/scenarios/'+this.props.scenario+'/executions', {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+        const responseBody = await response.json();
+        this.setTableHeaders(responseBody);
+        this.setTableInformation(responseBody);
     }
 
 
     render() {
-        //console.log("moy composnet just updated - rerendered");
-        var scenario = this.props.scenario;
+        const scenario = this.props.scenario;
         let legs = [];
         for (let i in this.state.tableHeader){
             legs.push(i);
         }
         const headers = this.state.tableHeader;
-        //console.log(this.state.exeInfo[0]["description"]);
         return (
-            <div class="table-responsive" style={{padding: "30px"}}> <h3 style={{color:"black"}}>  {scenario.toUpperCase()} </h3><p> {this.state.description}</p>
-                <Table style={{backgroundColor:"#E0F7FD",color:"#0059b3"}}>
-                    <thead>
-                    <tr >
-                        <th className="text-center">Execution</th>
-                        <th className="text-center">Time</th>
-                        <th className="text-center">Unexpected Callback</th>
-
-
-                        {legs.map(function(item){
-                            return (
-                                <th className="text-center" colspan={headers[item].length.toString()}>{"Call Leg"+item}
-                                    <table>
-                                        {headers[item].map(function(head){
-
-                                            return (<th className="text-center" style={{ width: 150 }}>{head}</th>)
-                                        })}
-                                    </table>
-                                </th>)})
-                        }
-                    </tr>
-                    </thead>
-                    <tbody>
+            <div className="table-responsive"><h3 className="scenarioName">{scenario.toUpperCase()}</h3><p><i>{this.state.description}</i></p>
+                <Table
+                    headers={
+                        <React.Fragment>
+                            <Table.Row>
+                                <Table.Header className="headerWidth">Execution</Table.Header>
+                                <Table.Header className="headerWidth">Time</Table.Header>
+                                <Table.Header className="headerWidth">Unexpected<br/>Callback</Table.Header>
+                                    {legs.map(function(item){
+                                        return (
+                                            <Table.Header className="callLegs" colSpan={headers[item].length.toString()}>{"Call Leg"+item}</Table.Header>
+                                        )})}
+                            </Table.Row>
+                            <Table.Row>
+                                <Table.Header  colSpan={"3"}></Table.Header>
+                                    {legs.map(function(item){
+                                        return (
+                                                <React.Fragment>
+                                                    {headers[item].map(function(head){
+                                                        return (<Table.Header >{head}</Table.Header>)
+                                                    })}
+                                                </React.Fragment>
+                                            )})
+                                    }
+                            </Table.Row>
+                        </React.Fragment>
+                }>
 
                     {this.state.exeInfo.map(function(execution){
-                        var count  = 0;
+                        let problem = execution.problem ? "Yes" : "No";
+                        let count = 0;
                         return (
 
-                            <tr>
-                                <TableData link={"http://localhost:8091/scenarios/"+scenario} exeid={execution["id"]} icon={execution["num"]}/>
-                                <td className="text-center">{execution["startedAt"]}</td>
-                                <td className={execution['prob']}>{execution["prob"]}</td>
+                            <Table.Row>
+                                <TableData link={"/scenarios/"+scenario} exeid={execution["id"]} icon={execution["num"]}/>
+                                <Table.Cell>{execution["startedAt"]}</Table.Cell>
+                                <Table.Cell className={execution.problem ? "callFailed" : "callPassed"}>{problem}</Table.Cell>
 
                                 {legs.reduce((allColumns, index) => {
-                                    const allevents = execution['callLegs'][index];
-
+                                    const allEvents = execution['callLegs'][index];
                                     return  [
 
                                         ...allColumns,
                                         ...headers[index].reduce((headerColumns, head) => {
-                                            //console.log(head);
-                                            var gotit = 0;
+                                            let gotit = 0;
                                             count = 0;
 
                                             return [
 
                                                 ...headerColumns,
-                                                ...allevents.map((event) => {
-                                                    //console.log(event);
+                                                ...allEvents.map((event) => {
                                                     count += 1;
-                                                    //console.log(count);
                                                     if (event.event === head) {
-
-
                                                         gotit = 1;
-                                                        return <td className={event.valid.toString()}></td>;
+                                                        let result= (event.valid == true) ? "passed" : "failed";
+                                                        return <Table.Cell className={result}></Table.Cell>;
                                                     }
                                                     if (headers[index].length === count && gotit ===0){
                                                         count =0;
-                                                        return <td className="missing">missing</td>
+                                                        return <Table.Cell className="missing">missing</Table.Cell>
                                                     }
-
                                                 })
                                             ];
 
                                         }, [])
-
                                     ];
                                 }, [])}
 
-                            </tr>
+                            </Table.Row>
                         );}
-
                     )}
-
-                    </tbody>
                 </Table>
             </div>
-
-
         );
     }
-
-
 }
-
-export default IndividualScenario;
+export default Individual;
 
 

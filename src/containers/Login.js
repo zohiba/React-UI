@@ -26,20 +26,11 @@ export default class Login extends Component {
         event.preventDefault();
     }
 
-    gotoScenario = event =>{
-        console.log(this.state.email);
-
-
+    goToScenario = event => {
         localStorage.clear();
         localStorage.setItem("user", this.state.email);
         localStorage.setItem("pass", this.state.password);
-
-        if (this.state.email== "test"){
-            if (this.state.password =="test"){
-
-                this.props.history.push({pathname:"./Scenario", data: [this.state.email, this.state.password]});
-            }
-        }
+        this.props.history.push({pathname:"./callScenarios", data: [this.state.email, this.state.password]});
 
     }
 
@@ -69,7 +60,7 @@ export default class Login extends Component {
                         bsSize="large"
                         disabled={!this.validateForm()}
                         type="submit"
-                        onClick={this.gotoScenario}
+                        onClick={this.goToScenario}
                     >
                         Login
                     </Button>

@@ -39,7 +39,6 @@ html, body, .app {
     -ms-user-select: none;
     user-select: none;
 }
-
 /* The actual popup */
 .popup .popuptext {
     visibility: hidden;
@@ -55,7 +54,6 @@ html, body, .app {
     left: 50%;
     margin-left: -80px;
 }
-
 /* Popup arrow */
 .popup .popuptext::after {
     content: "";
@@ -84,17 +82,4 @@ html, body, .app {
 @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity:1 ;}
-}
-
-.true{
-
-    width:70%;
-    background-color:black;
-
-}
-
-.false{
-    color:red;
-    width:70%;
-
 }
